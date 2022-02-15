@@ -8,16 +8,21 @@ import com.mflyyou.security.UserModelDetailsService;
 import com.mflyyou.security.jwt.JWTConfigurer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
+import org.springframework.security.config.annotation.web.configurers.HttpBasicConfigurer;
+import org.springframework.security.config.annotation.web.configurers.ServletApiConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
@@ -35,6 +40,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return new InMemoryUserDetailsManager(user, admin);
     }
 
+    @Bean
+    public WebSecurityCustomizer webSecurityCustomizer(){
+        return (webSecurity)->{
+            // 测试
+            System.out.println(111);
+        };
+    }
 
     @Bean
     public MyAuthenticationProvider myAuthenticationProvider() {
@@ -62,9 +74,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Override
+    public void configure(WebSecurity web) throws Exception {
+        super.configure(web);
+    }
+
+    @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
-                .csrf().disable()
+//                .csrf().disable()
                 .rememberMe().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 
@@ -78,6 +95,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 // 允许某些请求匿名访问
                 .antMatchers("/login").anonymous()
+                .antMatchers("/csrf/**").anonymous()
                 // 除以上匿名访问,别的请求都需要鉴权认证
                 .anyRequest().authenticated()
 
@@ -101,5 +119,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private JWTConfigurer securityConfigurerAdapter() {
         return new JWTConfigurer();
+    }
+
+    public static class Demo implements Customizer<HttpBasicConfigurer<HttpSecurity>> {
+
+        @Override
+        public void customize(HttpBasicConfigurer<HttpSecurity> httpBasicConfigurer) {
+        }
     }
 }
