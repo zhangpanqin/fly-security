@@ -25,7 +25,9 @@ DelegatingFilterProxy 有一个私有变量 Filter ，类型是 FilterChainProxy
 
 
 
-SecurityAutoConfiguration 自动化配置将，FilterChainProxy （在 spring context 中，bean name 是 springSecurityFilterChain)。
+SecurityAutoConfiguration 自动化配置初始化 DelegatingFilterProxy，FilterChainProxy （在 spring context 中，bean name 是 springSecurityFilterChain)。
+
+FilterChainProxy 中有 private List<SecurityFilterChain> filterChains，用于处理请求。FilterChainProxy 在 WebSecurityConfiguration 被初始化。
 
 ```java
 @Configuration(proxyBeanMethods = false)
@@ -38,7 +40,7 @@ public class WebSecurityConfiguration implements ImportAware, BeanClassLoaderAwa
 
 
 
-实现 WebSecurityConfigurerAdapter 的配置类都会添加到 WebSecurity 的配置中去，最终通过影响构建。
+实现 WebSecurityConfigurerAdapter 的配置类，可以修改 WebSecurity，也可以创建 HttpSecurity 进而多个  SecurityFilterChain 被创建。
 
 ```java
 @Override
@@ -58,7 +60,7 @@ public class WebSecurityConfiguration implements ImportAware, BeanClassLoaderAwa
 	}
 ```
 
-先配置 HttpSecurity 后配置 WebSecurity。
+先配置 HttpSecurity 后配置 WebSecurity。WebSecurityCustomizer 可  WebSecurity。
 
 WebSecurity 控制 FilterChainProxy，有多个  filterChains，private List<SecurityFilterChain> filterChains;
 
