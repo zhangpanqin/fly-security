@@ -1,1 +1,25 @@
+pluginManagement {
+    repositories {
+        mavenLocal()
+        maven {
+            url = 'https://maven.aliyun.com/repository/gradle-plugin'
+        }
+    }
+
+    plugins {
+        id 'org.springframework.boot' version '2.7.18'
+        id 'io.spring.dependency-management' version '1.0.15.RELEASE'
+    }
+}
+
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        maven {
+            url 'https://maven.aliyun.com/repository/public/'
+        }
+    }
+}
 rootProject.name = 'fly-security'
+include 'old-demo'
+
