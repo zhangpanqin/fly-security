@@ -9,5 +9,4 @@ public class FlySecurityApplication {
     public static void main(String[] args) {
         SpringApplication.run(FlySecurityApplication.class, args);
     }
-
 }
